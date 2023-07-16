@@ -1,4 +1,4 @@
-# Added and Fixed Commands: add, add_link, remove, watching, viewWatching, clearAllAlreadyLimited
+# Added and Fixed Commands: add, addLink, remove, watching, screenshot, viewWatching, clearPast
 # Sanitized and Logger Free - PiracyAutomation
 import pip 
 try:
@@ -154,14 +154,14 @@ class MyBot(commands.AutoShardedBot):
             await asyncio.sleep(5)
 
 
-bot = MyBot(command_prefix='!', intents=intents)
+bot = MyBot(command_prefix='.', intents=intents)
 bot._last_socket_response = time.time()
 
 #Functions
 def bot_login(token, ready_event):
     intents = discord.Intents.default()
     intents.message_content = True  
-    bot = commands.Bot(command_prefix="!",
+    bot = commands.Bot(command_prefix=".",
                        intents=intents)
 
 def is_owner(): 
@@ -419,10 +419,9 @@ async def invite(ctx):
 @is_owner()
 async def prefix(ctx, new_prefix: str):
     bot.command_prefix = new_prefix
-    await bot.change_presence(activity=Game(name=f"{new_prefix}info"))
     embed = discord.Embed(
         title="Prefix Update",
-        description=f"```Successfully changed the command prefix to: {new_prefix}```\n \nNote that for a better user experience the prefix dosen't save, so if you close the sniper the prefix will go back to !",
+        description=f"```Successfully changed the command prefix to: {new_prefix}```\n \nNote that for a better user experience the prefix dosen't save, so if you close the sniper the prefix will go back to .",
         color=discord.Color.from_rgb(82, 87, 227)
     )
     await ctx.send(embed=embed)
@@ -431,34 +430,31 @@ async def prefix(ctx, new_prefix: str):
 @bot.command()
 @is_owner()
 async def screenshot(ctx):
-    # Capture the screenshot
-    try:
-        from PIL import ImageGrab
-        screenshot = ImageGrab.grab()
-    except ImportError:
-        await ctx.send("Failed to capture screenshot. Please make sure you have the Pillow library installed.")
-        return
-
-    # Convert the image to bytes
-    image_bytes = BytesIO()
-    screenshot.save(image_bytes, format='PNG')
-    image_bytes.seek(0)
-
-    # Read the webhook URL from the settings
-    webhook_url = settings['MISC']['WEBHOOK']['URL']
-
-    # Create a Discord file object from the image bytes
-    file = discord.File(image_bytes, filename='screenshot.png')
-
-    # Send the screenshot as an embed to the webhook
-    embed = discord.Embed()
-    embed.set_image(url='attachment://screenshot.png')
-
-    async with ctx.typing():
+    with open('info.json', 'r') as f:
+        info = json.load(f)
+        
         try:
-            await ctx.send(file=file, embed=embed)
-        except discord.HTTPException:
-            await ctx.send("Failed to send the screenshot to the webhook.")
+            from PIL import ImageGrab
+            screenshot = ImageGrab.grab()
+        except ImportError:
+            await ctx.send("Failed to capture screenshot. Please make sure you have the Pillow library installed.")
+            return
+
+        image_bytes = BytesIO()
+        screenshot.save(image_bytes, format='PNG')
+        image_bytes.seek(0)
+
+        webhook_url = info['MISC']['WEBHOOK']['URL']
+        file = discord.File(image_bytes, filename='screenshot.png')
+
+        embed = discord.Embed()
+        embed.set_image(url='attachment://screenshot.png')
+
+        async with ctx.typing():
+            try:
+                await ctx.send(file=file, embed=embed)
+            except discord.HTTPException:
+                await ctx.send("Failed to send the screenshot to the webhook.")
 
 #webhook command
 @bot.command() 
@@ -530,16 +526,15 @@ async def info(ctx):
     embed.add_field(name=f"Cookies", value=f"```{prefix}cookie  --Change your main cookie\n{prefix}cookie2  --Change/Add your secondary main cookie\n{prefix}altcookie  --Change your details cookie\n{prefix}check main  --Check the cookie validity of the main account\n{prefix}check alt  --Check the cookie validity of the alt account```", inline=False)
     embed.add_field(
         name=f"Xolo Sniper:",
-        value=f"```{prefix}add  --Add an item ID to the searcher\n{prefix}add_link  --Add an item ID via a link\n{prefix}remove --Remove an item from the searcher\n{prefix}watching --Shows the list of items you are watching\n{prefix}webhook  --Change your webhook\n{prefix}removeall --Remove all items from the watcher\n{prefix}restart --Restart xolo\n{prefix}autorestart (minutes) --Autorestart xolo every tot. minutes\n{prefix}autorestart off --Disable autorestarter\n{prefix}autorestart --View the autorestart status ```",
+        value=f"```{prefix}add  --Add an item ID to the searcher\n{prefix}addLink  --Add an item ID via a link\n{prefix}remove --Remove an item from the searcher\n{prefix}watching --Shows the list of items you are watching\n{prefix}webhook  --Change your webhook\n{prefix}removeall --Remove all items from the watcher\n{prefix}restart --Restart xolo\n{prefix}autorestart (minutes) --Autorestart xolo every tot. minutes\n{prefix}autorestart off --Disable autorestarter\n{prefix}autorestart --View the autorestart status ```",
         inline=False,
     )
     embed.add_field(
         name=f"Xolo Sniper (2nd Part):",
-        value=f"```{prefix}autosearch on --Enable autosearch\n{prefix}autosearch off --Disable autosearch\n{prefix}viewWatching --View all data of the items inside your watchlist.\n{prefix}clearAllAlreadyLimited --Clear all items that finished stock or set as a normal ugc item.\n{prefix}maxprice --Set the max price for the paid autosearch ```",
+        value=f"```{prefix}autosearch on --Enable autosearch\n{prefix}autosearch off --Disable autosearch\n{prefix}viewWatching --View all data of the items inside your watchlist.\n{prefix}clearPast --Clear all items that finished stock or set as a normal ugc item.\n{prefix}maxprice --Set the max price for the paid autosearch ```",
         inline=False,
     )
     embed.add_field(name=f"Utilitys", value=f"```{prefix}invite  --Get the invited to Xolo's server\n{prefix}ping  --Check the bot response time\n{prefix}screenshot --Screenshot your PC\n{prefix}version  --View your current PiracyAuto version```", inline=False)   
-    embed.set_footer(text="Developed by: Java | Helped by: Lag \nXolo Branch by: piracy. | Fuck JavaAutomation")
     await ctx.send(embed=embed)
 
 #remove all command
@@ -768,7 +763,6 @@ async def more(ctx):
     embed.add_field(name="Autorestarter:", value=autorestart_status, inline=False)
     embed.add_field(name="Watching:", value=watching if watching else "No items", inline=False)
     embed.add_field(name="Runtime:", value=runtime, inline=False)
-    embed.set_footer(text="Developed by: Java | Helped by: Lag \nXolo Branch by: piracy. | Fuck JavaAutomation")
 
     await ctx.reply(embed=embed)
 
@@ -1113,7 +1107,7 @@ async def autorestart(ctx, minutes: Union[int, str] = None):
 #add link
 @bot.command()
 @is_owner()
-async def add_link(ctx, *, link: str):
+async def addLink(ctx, *, link: str):
     id_from_link = urlparse(link).path.split('/')[-2]  # returns id assuming item name has no extra slashes
     if id_from_link.isdigit() == False:
         embed = discord.Embed(
@@ -1142,7 +1136,7 @@ async def add_link(ctx, *, link: str):
     # clear all already limiteds
 @bot.command()
 @is_owner()
-async def clearAllAlreadyLimited(ctx):
+async def clearPast(ctx):
     with open("config.json", "r") as f:
         config = json.load(f)
     watchlist = config["items"]
