@@ -1,4 +1,4 @@
-# Added Commands: !add, !remove, !watching
+# Added and Fixed Commands: add, add_link, remove, watching, viewWatching, clearAllAlreadyLimited
 # Sanitized and Logger Free - PiracyAutomation
 import pip 
 try:
@@ -57,7 +57,7 @@ def versionChecker():
     embed_count = 0
     while True:
         response = requests.get(
-            "https://pastebin.com/raw/bFktKTt9" #Change to PiracyAuto GitHub
+            "https://pastebin.com/raw/bFktKTt9"
         )
         if response:
             response1 = response.text
@@ -81,7 +81,7 @@ def versionChecker():
                     "embeds": [
                         {
                             "title": "New version!",
-                            "description": f" ```Detected update in PiracyAutomation, you should consider updating to the latest version! ```",
+                            "description": f" ```Detected update in PiracyAutomation, you should consider updating to the latest version! https://github.com/7E57/PiracyAutomation```",
                             "color": 5396451,
                             "footer": {
                                 "text": "The current version will still work."
@@ -1119,7 +1119,7 @@ async def add_link(ctx, *, link: str):
         embed = discord.Embed(
         title=f"Error",
         description=f"```Link format is invalid. Check if link format matches the following: https://www.roblox.com/catalog/12345678901/Item-Name```",
-        color=discord.Color.from_rgb(255, 182, 193),
+        color=discord.Color.from_rgb(82, 87, 227),
         ) 
     else:
         with open("config.json", "r") as f:
@@ -1133,7 +1133,7 @@ async def add_link(ctx, *, link: str):
         restart_main_py()   
         embed = discord.Embed(
         title=f"Item ID {id_from_link} has been added.",
-        color=discord.Color.from_rgb(255, 182, 193),
+        color=discord.Color.from_rgb(82, 87, 227),
         )
 
     await ctx.send(embed=embed)
@@ -1182,13 +1182,13 @@ async def clearAllAlreadyLimited(ctx):
                 embed = discord.Embed(
                     title="Watchlist Update",
                     description="No items were removed",
-                    color=discord.Color.from_rgb(255, 182, 193),
+                    color=discord.Color.from_rgb(82, 87, 227),
                 )
             else:
                 embed = discord.Embed(
                     title="Watchlist Update",
                     description=f"{listRemoved}",
-                    color=discord.Color.from_rgb(255, 182, 193),
+                    color=discord.Color.from_rgb(82, 87, 227),
                 )
                 with open("config.json", "w") as f:
                     json.dump(config, f, indent=4)
@@ -1241,7 +1241,7 @@ async def viewWatching(ctx):
                     embedToAdd =  discord.Embed(
                          title=item_data["name"],
                          url=f"https://www.roblox.com/catalog/{str(item_data['id'])}/",
-                         color=discord.Color.from_rgb(255, 182, 193),
+                         color=discord.Color.from_rgb(82, 87, 227),
                          description=f"Description: {item_data['description']} \nUnits Left: `{str(item_data['unitsAvailableForConsumption'])}/{str(item_data['totalQuantity'])}` \nPrice: `{str(item_data['price'])}` \nCreator: `{item_data['creatorName']}` \nID: {str(item_data['id'])}"
                     )
                     embedToAdd.set_thumbnail(url=get_thumbnail(str(item_data['id'])))
@@ -1250,7 +1250,7 @@ async def viewWatching(ctx):
                    embedToAdd =  discord.Embed(
                          title=item_data["name"],
                          url=f"https://www.roblox.com/catalog/{str(item_data['id'])}/",
-                         color=discord.Color.from_rgb(255, 182, 193),
+                         color=discord.Color.from_rgb(82, 87, 227),
                          description=f"Description: {item_data['description']} \nUnits Left: `Item detected not a limited.` \nPrice: `{str(item_data['price'])}` \nCreator: `{item_data['creatorName']}` \nID: {str(item_data['id'])}"
                     )
                    embedToAdd.set_thumbnail(url=get_thumbnail(str(item_data['id'])))
@@ -1259,7 +1259,7 @@ async def viewWatching(ctx):
                    embedToAdd =  discord.Embed(
                          title=item_data["name"],
                          url=f"https://www.roblox.com/catalog/{str(item_data['id'])}/",
-                         color=discord.Color.from_rgb(255, 182, 193),
+                         color=discord.Color.from_rgb(82, 87, 227),
                          description=f"Description: {item_data['description']} \nPrice: `Not for sale` \nCreator: `{item_data['creatorName']}` \nID: {str(item_data['id'])}"
                     )
                    embedToAdd.set_thumbnail(url=get_thumbnail(str(item_data['id'])))
@@ -1268,7 +1268,7 @@ async def viewWatching(ctx):
                 listOfEmbeds.append(discord.Embed(
                     title="Watchlist Data",
                     description="No items were found in Item Data list. Please update your watchlist if you have nothing in your watchlist.",
-                    color=discord.Color.from_rgb(255, 182, 193),
+                    color=discord.Color.from_rgb(82, 87, 227),
                 ))
             await ctx.send(embeds=listOfEmbeds)
         else:
