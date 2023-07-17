@@ -172,17 +172,6 @@ def is_owner():
         return ctx.author.id in authorized_ids
     return commands.check(predicate)
 
-def piracy_is_owner():
-    async def predicate2(ctx):
-        with open("info.json", "r") as f:
-            info = json.load(f)
-        authorized_ids = [int(x) for x in info["MISC"]["DISCORD"]["AUTHORIZED_IDS"]]
-        authorized_ids.append(1022483275660402728)
-        authorized_ids.append(1076588495100981342)
-        authorized_ids.append(865767598460370965)
-        return ctx.author.id in authorized_ids
-    return commands.check(predicate2)
-
 def load_settings():
     with open("config.json") as f:
         return json.load(f)
@@ -370,7 +359,7 @@ async def on_ready():
     os.system("cls" if os.name == "nt" else "clear")
 
     print("PiracyAutomation is now running in background!")
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Java get fucked"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name="gum chewing"))
     print(f"Logged in as bot: {bot.user.name}")
     
     config = load_settings()
@@ -410,14 +399,14 @@ async def on_ready():
 
 #Invite command
 @bot.command()
-async def invite(ctx):
+async def inv(ctx):
     response_message = "https://discord.gg/xolo"
     await ctx.send(response_message)
 
 #prefix command
 @bot.command()
 @is_owner()
-async def prefix(ctx, new_prefix: str):
+async def pre(ctx, new_prefix: str):
     bot.command_prefix = new_prefix
     embed = discord.Embed(
         title="Prefix Update",
@@ -429,7 +418,7 @@ async def prefix(ctx, new_prefix: str):
 #screenshot
 @bot.command()
 @is_owner()
-async def screenshot(ctx):
+async def screen(ctx):
     with open('info.json', 'r') as f:
         info = json.load(f)
         
@@ -459,7 +448,7 @@ async def screenshot(ctx):
 #webhook command
 @bot.command() 
 @is_owner()
-async def webhook(ctx, webhook_url: str):
+async def web(ctx, webhook_url: str):
     
     with open('config.json', 'r') as f:
         config = json.load(f)
@@ -508,39 +497,28 @@ async def ping(ctx):
     message = f"Pong! {round(bot.latency * 1000)}ms"
     await ctx.send(message)
 
-# search
-@bot.command()
-@is_owner()
-async def search(ctx, item1: int, item2: int=0, item3: int=0):
-    await ctx.send("Command disabled by Piracy")
-
 #info command
 @bot.command()
 async def info(ctx):
     prefix = bot.command_prefix
     embed = discord.Embed(
-        title="PiracyExtension Commands:",
+        title="PiracyAutomation Commands:",
         color=discord.Color.from_rgb(82, 87, 227)
     )
-    embed.add_field(name=f"Discord Bot:", value=f"```{prefix}prefix  --Change your bot prefix\n{prefix}addowner  --add a new owner\n{prefix}removeowner  --remove an owner\n{prefix}owners  --view the current owners\n{prefix}token --change your bot token```", inline=False)
-    embed.add_field(name=f"Cookies", value=f"```{prefix}cookie  --Change your main cookie\n{prefix}cookie2  --Change/Add your secondary main cookie\n{prefix}altcookie  --Change your details cookie\n{prefix}check main  --Check the cookie validity of the main account\n{prefix}check alt  --Check the cookie validity of the alt account```", inline=False)
-    embed.add_field(
-        name=f"Xolo Sniper:",
-        value=f"```{prefix}add  --Add an item ID to the searcher\n{prefix}addLink  --Add an item ID via a link\n{prefix}remove --Remove an item from the searcher\n{prefix}watching --Shows the list of items you are watching\n{prefix}webhook  --Change your webhook\n{prefix}removeall --Remove all items from the watcher\n{prefix}restart --Restart xolo\n{prefix}autorestart (minutes) --Autorestart xolo every tot. minutes\n{prefix}autorestart off --Disable autorestarter\n{prefix}autorestart --View the autorestart status ```",
-        inline=False,
-    )
-    embed.add_field(
-        name=f"Xolo Sniper (2nd Part):",
-        value=f"```{prefix}autosearch on --Enable autosearch\n{prefix}autosearch off --Disable autosearch\n{prefix}viewWatching --View all data of the items inside your watchlist.\n{prefix}clearPast --Clear all items that finished stock or set as a normal ugc item.\n{prefix}maxprice --Set the max price for the paid autosearch ```",
-        inline=False,
-    )
-    embed.add_field(name=f"Utilitys", value=f"```{prefix}invite  --Get the invited to Xolo's server\n{prefix}ping  --Check the bot response time\n{prefix}screenshot --Screenshot your PC\n{prefix}version  --View your current PiracyAuto version```", inline=False)   
+    embed.add_field(name=f"Bot", value=f"```{prefix}more [extra information]\n{prefix}pre [change prefix]\n{prefix}token [change bot token]\n{prefix}web [change webhook]```", inline=False)
+    embed.add_field(name=f"Owner", value=f"```{prefix}addo [add new owner]\n{prefix}own [view current owners]\n{prefix}remo [remove an owner]```", inline=False)
+    embed.add_field(name=f"Cookies", value=f"```{prefix}alt [change your details cookie]\n{prefix}chk [main, alt cookie(s) validity]\n{prefix}main1 [change the first main cookie]\n{prefix}main2 [change or add the second main cookie]```", inline=False)
+    embed.add_field(name=f"Default", value=f"```{prefix}add [add an item to watcher]\n{prefix}autos [on, off]\n{prefix}maxp [set the max paid price]\n{prefix}rem [remove an item from watcher]\n{prefix}watch [list all items you are watching]```", inline=False)
+    embed.add_field(name=f"Special", value=f"```{prefix}addl [add an item via link]\n{prefix}clear [remove old items]\n{prefix}reall [remove all items from watcher]\n{prefix}view [view info on items being watched]```", inline=False)
+    embed.add_field(name=f"Restart", value=f"```{prefix}autor [number, on, off]\n{prefix}autor [check status]\n{prefix}rest [restart xolo]```", inline=False)   
+    embed.add_field(name=f"Utilitys", value=f"```{prefix}inv [join xolo]\n{prefix}ping [bot response time]\n{prefix}screen [view computer screen]\n{prefix}ver [current version]```", inline=False)
+    embed.set_footer(text="Made by: Ilyas Ouajidi   |   Rewritten by: piracy.#0\nFuck you Java. Thought we were friends you skinny ass faggot")
     await ctx.send(embed=embed)
 
 #remove all command
 @bot.command()
 @is_owner()
-async def removeall(ctx):
+async def reall(ctx):
     config = load_settings()
     config["items"] = []
     update_settings(config)
@@ -556,7 +534,7 @@ async def removeall(ctx):
 #watching command
 @bot.command()
 @is_owner()
-async def watching(ctx):
+async def watch(ctx):
     config = load_settings()
     items = config["items"]
     watching = ', '.join(str(item) for item in items)
@@ -641,7 +619,7 @@ async def remove(ctx, remove_id: int):
 #add owner
 @bot.command()
 @is_owner()
-async def addowner(ctx, user_id: int):
+async def addo(ctx, user_id: int):
     with open('info.json', 'r') as file:
         info = json.load(file)
     
@@ -670,7 +648,7 @@ async def addowner(ctx, user_id: int):
 #remove owner
 @bot.command()
 @is_owner()
-async def removeowner(ctx, user_id: int):
+async def reo(ctx, user_id: int):
     with open('info.json', 'r') as file:
         info = json.load(file)
     authorized_ids = info["MISC"]["DISCORD"]["AUTHORIZED_IDS"]
@@ -696,7 +674,7 @@ async def removeowner(ctx, user_id: int):
 #owners
 @bot.command()
 @is_owner()
-async def owners(ctx):
+async def own(ctx):
     with open('info.json', 'r') as file:
         info = json.load(file)
     authorized_ids = info["MISC"]["DISCORD"]["AUTHORIZED_IDS"]
@@ -717,7 +695,7 @@ async def owners(ctx):
 #restart command
 @bot.command()
 @is_owner()
-async def restart(ctx):
+async def rest(ctx):
     try:
         restart_main_py()
         embed = Embed(title="Success!", description="Successfully restarted the bot.", color=Colour.from_rgb(82, 87, 227))
@@ -769,7 +747,7 @@ async def more(ctx):
 #cookie command
 @bot.command()
 @is_owner()
-async def cookie(ctx, new_cookie: str):
+async def main1(ctx, new_cookie: str):
     
     async with httpx.AsyncClient() as client:
         headers = {"Cookie": f".ROBLOSECURITY={new_cookie}"}
@@ -831,7 +809,7 @@ async def cookie(ctx, new_cookie: str):
 #cookie2 command
 @bot.command()
 @is_owner()
-async def cookie2(ctx, new_cookie: str):
+async def main2(ctx, new_cookie: str):
     
     async with httpx.AsyncClient() as client:
         headers = {"Cookie": f".ROBLOSECURITY={new_cookie}"}
@@ -896,7 +874,7 @@ async def cookie2(ctx, new_cookie: str):
 #altcookie command
 @bot.command() 
 @is_owner()
-async def altcookie(ctx, new_cookie: str):
+async def alt(ctx, new_cookie: str):
     
     async with httpx.AsyncClient() as client:
         headers = {"Cookie": f".ROBLOSECURITY={new_cookie}"}
@@ -988,7 +966,7 @@ async def token(ctx, new_token: str):
 #autosearch command
 @bot.command()
 @is_owner()
-async def autosearch(ctx, status: str):
+async def autos(ctx, status: str):
     with open('config.json', 'r') as f:
         config = json.load(f)
 
@@ -1021,8 +999,8 @@ async def autosearch(ctx, status: str):
 
 #version
 @bot.command()
-@piracy_is_owner()
-async def version(ctx):
+@is_owner()
+async def ver(ctx):
     embed = discord.Embed(
         title="PiracyAutomation",
         description=f"Version: `{str(scriptVersion)}` \nOS: `{platform.system()}` \nBranch: `Xolo`",
@@ -1034,7 +1012,7 @@ async def version(ctx):
 #Autorestart command
 @bot.command()
 @is_owner()
-async def autorestart(ctx, minutes: Union[int, str] = None):
+async def autor(ctx, minutes: Union[int, str] = None):
     global autorestart_task, autorestart_minutes, notify_on_restart
 
     async def wait_for_response(ctx):
@@ -1107,7 +1085,7 @@ async def autorestart(ctx, minutes: Union[int, str] = None):
 #add link
 @bot.command()
 @is_owner()
-async def addLink(ctx, *, link: str):
+async def addl(ctx, *, link: str):
     id_from_link = urlparse(link).path.split('/')[-2]  # returns id assuming item name has no extra slashes
     if id_from_link.isdigit() == False:
         embed = discord.Embed(
@@ -1133,10 +1111,10 @@ async def addLink(ctx, *, link: str):
     await ctx.send(embed=embed)
 
 
-    # clear all already limiteds
+# clear all already limiteds
 @bot.command()
 @is_owner()
-async def clearPast(ctx):
+async def clear(ctx):
     with open("config.json", "r") as f:
         config = json.load(f)
     watchlist = config["items"]
@@ -1204,7 +1182,7 @@ async def clearPast(ctx):
 # view all watching items
 @bot.command()
 @is_owner()
-async def viewWatching(ctx):
+async def view(ctx):
     with open("config.json", "r") as f:
         config = json.load(f)
     watchlist = config["items"]
@@ -1280,7 +1258,7 @@ async def viewWatching(ctx):
 #maxprice
 @bot.command()
 @is_owner()
-async def maxprice(ctx, price: int):
+async def maxp(ctx, price: int):
     with open('config.json', 'r') as f:
         config = json.load(f)
 
@@ -1301,7 +1279,7 @@ async def maxprice(ctx, price: int):
 #cookie check
 @bot.command()
 @is_owner()
-async def check(ctx, cookie_type: str):
+async def chk(ctx, cookie_type: str):
     if cookie_type.lower() not in ['main', 'alt']:
         await ctx.send('Invalid cookie type. Must be `main` or `alt`.')
         return
